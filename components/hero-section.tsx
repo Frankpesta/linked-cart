@@ -30,7 +30,7 @@ export default function HeroSection() {
 	}, []);
 
 	return (
-		<section className="relative w-full min-h-screen flex items-center pt-20 overflow-hidden">
+		<section className="relative w-full min-h-screen flex items-center pt-40 md:pt-20 overflow-hidden">
 			{/* Background gradient */}
 			<div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-background dark:from-primary/10 dark:to-background -z-10"></div>
 
@@ -68,9 +68,6 @@ export default function HeroSection() {
 						transition={{ duration: 0.5, delay: 0.4 }}>
 						<Button size="lg" asChild>
 							<Link href="#waitlist">Join the Waitlist</Link>
-						</Button>
-						<Button size="lg" variant="outline" asChild>
-							<Link href="#how-it-works">How It Works</Link>
 						</Button>
 					</motion.div>
 
