@@ -58,8 +58,8 @@ export default function HeroSection() {
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.5, delay: 0.2 }}>
 						LinkedCart connects you to every store, mall, and restaurant in your
-						city — all in one app. From clothing to groceries, gadgets to
-						gourmet — if it's in your city, we'll get it to your doorstep.
+						city, all in one app. From clothing to groceries, gadgets to
+						gourmet; if it's in your city, we'll get it to your doorstep.
 					</motion.p>
 					<motion.div
 						className="flex flex-col sm:flex-row gap-4 pt-4 hero-animation-element"

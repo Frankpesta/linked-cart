@@ -11,8 +11,8 @@ export default function Footer() {
 					<div className="space-y-4">
 						<Image
 							src={"/logo.svg"}
-							width={100}
-							height={100}
+							width={120}
+							height={120}
 							alt="logo"
 							objectFit="cover"
 						/>
@@ -25,7 +25,9 @@ export default function Footer() {
 								className="text-primary"
 								size="icon"
 								asChild>
-								<Link href="#" aria-label="Facebook">
+								<Link
+									href="https://www.facebook.com/share/184KGxa631/?mibextid=wwXIfr"
+									aria-label="Facebook">
 									<Facebook className="h-5 w-5" />
 								</Link>
 							</Button>
@@ -34,7 +36,9 @@ export default function Footer() {
 								size="icon"
 								asChild
 								className="text-primary">
-								<Link href="#" aria-label="Twitter">
+								<Link
+									href="https://x.com/linkedcartapp?s=21&t=SYrog4wVA60S1Y5_epinEg"
+									aria-label="Twitter">
 									<Twitter className="h-5 w-5" />
 								</Link>
 							</Button>
@@ -43,7 +47,9 @@ export default function Footer() {
 								className="text-primary"
 								size="icon"
 								asChild>
-								<Link href="#" aria-label="Instagram">
+								<Link
+									href="https://www.instagram.com/linkedcartapp?igsh=MXVrM2dtZ3RtaHBrcg%3D%3D&utm_source=qr"
+									aria-label="Instagram">
 									<Instagram className="h-5 w-5" />
 								</Link>
 							</Button>
@@ -52,8 +58,28 @@ export default function Footer() {
 								className="text-primary"
 								size="icon"
 								asChild>
-								<Link href="#" aria-label="LinkedIn">
+								<Link
+									href="https://www.linkedin.com/company/linkedcart/"
+									aria-label="LinkedIn">
 									<Linkedin className="h-5 w-5" />
+								</Link>
+							</Button>
+							<Button
+								variant="outline"
+								className="text-primary"
+								size="icon"
+								asChild>
+								<Link
+									href="https://www.tiktok.com/@linkedcart?_t=ZS-8wPZ8ARDxuD&_r=1"
+									aria-label="TikTok">
+									<Image
+										src={"/tiktok.svg"}
+										width={20}
+										height={20}
+										alt="tiktok"
+										sizes="icon"
+										className="object-cover"
+									/>
 								</Link>
 							</Button>
 						</div>

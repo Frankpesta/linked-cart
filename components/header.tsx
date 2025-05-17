@@ -44,8 +44,8 @@ export default function Header() {
 					<Image
 						src={"/logo.svg"}
 						alt="logo"
-						width={100}
-						height={100}
+						width={120}
+						height={120}
 						objectFit="cover"
 					/>
 				</Link>
@@ -57,7 +57,7 @@ export default function Header() {
 							key={link.name}
 							href={link.href}
 							className={cn(
-								"text-sm font-medium transition-colors hover:text-primary",
+								"text-lg font-medium transition-colors hover:text-primary",
 								pathname === link.href
 									? "text-primary"
 									: "text-muted-foreground"
@@ -98,7 +98,7 @@ export default function Header() {
 									key={link.name}
 									href={link.href}
 									className={cn(
-										"text-sm font-medium transition-colors hover:text-primary py-2",
+										"text-lg font-medium transition-colors hover:text-primary py-2",
 										pathname === link.href
 											? "text-primary"
 											: "text-muted-foreground"

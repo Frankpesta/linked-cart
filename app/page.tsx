@@ -8,6 +8,7 @@ import MerchantsSection from "@/components/merchants-section";
 import DriversSection from "@/components/drivers-section";
 import TestimonialsSection from "@/components/testimonials-section";
 import FinalCTA from "@/components/final-cta";
+import { SlideShow } from "@/components/slideshow";
 
 export default function Home() {
 	return (
@@ -20,7 +21,7 @@ export default function Home() {
 			<WaitlistSection />
 			<MerchantsSection />
 			<DriversSection />
-			{/* <TestimonialsSection /> */}
+			<SlideShow />
 			<FinalCTA />
 		</main>
 	);
