@@ -60,8 +60,8 @@ export default function MissionSection() {
 							<h2 className="text-3xl md:text-4xl font-bold">Our Vision</h2>
 							<p className="text-lg text-muted-foreground">
 								To become the most trusted on-demand delivery and shopping
-								platform in Canada - empowering users with convenience,
-								retailers with reach, and drivers with opportunity.
+								platform, empowering users with convenience, retailers with
+								reach, and drivers with opportunity, wherever they are.
 							</p>
 						</motion.div>
 					</TabsContent>
