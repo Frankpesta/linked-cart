@@ -29,16 +29,6 @@ import { cityOptions } from "@/constants/cityOptions";
 // Type for city options
 type CityOption = { value: string; label: string };
 
-// Sample city options for US and Canada (expand as needed)
-// const cityOptions: CityOption[] = [
-// 	{ value: "new_york_ny_us", label: "New York, NY, USA" },
-// 	{ value: "los_angeles_ca_us", label: "Los Angeles, CA, USA" },
-// 	{ value: "chicago_il_us", label: "Chicago, IL, USA" },
-// 	{ value: "toronto_on_ca", label: "Toronto, ON, Canada" },
-// 	{ value: "vancouver_bc_ca", label: "Vancouver, BC, Canada" },
-// 	{ value: "montreal_qc_ca", label: "Montreal, QC, Canada" },
-// ];
-
 // Extended schema to include conditional fields
 const formSchema = z
 	.object({
@@ -105,8 +95,8 @@ const customSelectStyles = {
 				? "#4A90E2"
 				: "#2684FF"
 			: darkMode
-			? "#555"
-			: "#ccc",
+				? "#555"
+				: "#ccc",
 		color: darkMode ? "white" : "black",
 		boxShadow: state.isFocused
 			? darkMode
@@ -129,8 +119,8 @@ const customSelectStyles = {
 				? "#4A90E2"
 				: "#2684FF"
 			: darkMode
-			? "#2D2D2D"
-			: "white",
+				? "#2D2D2D"
+				: "white",
 		color: state.isFocused ? "white" : darkMode ? "white" : "black",
 		cursor: "pointer",
 	}),
@@ -185,6 +175,25 @@ export default function WaitlistForm() {
 	// Watch category to conditionally render fields
 	const category = form.watch("category");
 
+	useEffect(() => {
+		if (category === "individual") {
+			form.setValue("businessName", "");
+			form.setValue("businessAddress", "");
+			form.setValue("postalCode", "");
+			form.setValue("businessDescription", undefined);
+			form.setValue("location", undefined);
+		}
+		if (category === "shoppers/drivers") {
+			form.setValue("businessName", "");
+			form.setValue("businessAddress", "");
+			form.setValue("postalCode", "");
+			form.setValue("businessDescription", undefined);
+		}
+		if (category === "store owner" || category === "restaurant owner") {
+			form.setValue("location", undefined);
+		}
+	}, [category]);
+
 	async function onSubmit(values: FormValues) {
 		setIsSubmitting(true);
 		try {
@@ -201,12 +210,12 @@ export default function WaitlistForm() {
 							businessAddress: values.businessAddress,
 							postalCode: values.postalCode,
 							businessDescription: values.businessDescription,
-					  }
+						}
 					: {}),
 				...(values.category === "shoppers/drivers"
 					? {
 							location: values.location?.label,
-					  }
+						}
 					: {}),
 			};
 
