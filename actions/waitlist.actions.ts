@@ -8,7 +8,7 @@ import { WaitlistConfirmationEmail } from "@/emails/WaitlistConfirmationEmail";
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
-// Extended schema with conditional validation
+// Schema remains unchanged
 const waitlistSchema = z
 	.object({
 		name: z.string().min(2, "Name must be at least 2 characters"),
@@ -45,58 +45,37 @@ const waitlistSchema = z
 		},
 		{
 			message: "Please fill in all required fields for your category",
-			path: ["businessName"], // generic path for error reporting
+			path: ["businessName"],
 		}
 	);
 
-export async function joinWaitlist(formData: FormData) {
+// Accepts structured data directly from frontend
+export async function joinWaitlist(data: z.infer<typeof waitlistSchema>) {
 	try {
-		// Extract fields from formData
-		const name = formData.get("name") as string;
-		const email = formData.get("email") as string;
-		const phone = formData.get("phone") as string;
-		const category = formData.get("category") as
-			| "individual"
-			| "store owner"
-			| "restaurant owner"
-			| "shoppers/drivers";
+		// Validate data
+		const validated = waitlistSchema.safeParse(data);
 
-		// Optional fields
-		const businessName = formData.get("businessName") as string | null;
-		const businessAddress = formData.get("businessAddress") as string | null;
-		const postalCode = formData.get("postalCode") as string | null;
-		const businessDescription = formData.get("businessDescription") as
-			| "African"
-			| "Chinese"
-			| "Indian"
-			| "Mexican"
-			| "Caribbean"
-			| "Others"
-			| null;
-		const location = formData.get("location") as string | null;
+		if (!validated.success) {
+			return {
+				success: false,
+				error: "Invalid form data",
+				details: validated.error.format(),
+			};
+		}
 
-		// Validate all fields
-		const validatedFields = waitlistSchema.safeParse({
+		const {
 			name,
 			email,
 			phone,
 			category,
-			businessName: businessName || undefined,
-			businessAddress: businessAddress || undefined,
-			postalCode: postalCode || undefined,
-			businessDescription: businessDescription || undefined,
-			location: location || undefined,
-		});
+			businessName,
+			businessAddress,
+			postalCode,
+			businessDescription,
+			location,
+		} = validated.data;
 
-		if (!validatedFields.success) {
-			return {
-				success: false,
-				error: "Invalid form data",
-				details: validatedFields.error.format(),
-			};
-		}
-
-		// Insert into database
+		// Insert into DB
 		await db.insert(waitlist).values({
 			name,
 			email,
@@ -109,23 +88,19 @@ export async function joinWaitlist(formData: FormData) {
 			location: location || null,
 		});
 
+		// Send confirmation email
 		try {
 			await resend.emails.send({
-				from: "LinkedCart <onboarding@linkedcart.com>",
+				from: "LinkedCart <hello@linkedcart.com>",
 				to: email,
 				subject: "Welcome to the Waitlist!",
-				react: await WaitlistConfirmationEmail({
-					name: name,
-				}),
+				react: await WaitlistConfirmationEmail({ name }),
 			});
 		} catch (emailError) {
 			console.error("Error sending welcome email:", emailError);
-			// Optionally, you can decide whether to throw here or just log and continue
-			throw new Error("Failed to send welcome email");
 		}
-		return {
-			success: true,
-		};
+
+		return { success: true };
 	} catch (error) {
 		console.error("Error adding to waitlist:", error);
 		return {

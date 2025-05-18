@@ -25,6 +25,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import ReactSelect from "react-select";
 import { cityOptions } from "@/constants/cityOptions";
+import { joinWaitlist } from "@/actions/waitlist.actions";
 
 // Type for city options
 type CityOption = { value: string; label: string };
@@ -41,14 +42,12 @@ const formSchema = z
 			"restaurant owner",
 			"shoppers/drivers",
 		]),
-		// Conditional fields for store/restaurant owners
-		businessName: z.string().min(1).optional(),
-		businessAddress: z.string().min(1).optional(),
+		businessName: z.string().optional(),
+		businessAddress: z.string().optional(),
 		postalCode: z.string().optional(),
 		businessDescription: z
 			.enum(["African", "Chinese", "Indian", "Mexican", "Caribbean", "Others"])
 			.optional(),
-		// Conditional field for shoppers/drivers
 		location: z
 			.object({
 				value: z.string(),
@@ -56,30 +55,41 @@ const formSchema = z
 			})
 			.optional(),
 	})
-	.refine(
-		(data) => {
-			if (
-				data.category === "store owner" ||
-				data.category === "restaurant owner"
-			) {
-				return (
-					data.businessName &&
-					data.businessName.trim().length > 0 &&
-					data.businessAddress &&
-					data.businessAddress.trim().length > 0 &&
-					data.businessDescription
-				);
+	.superRefine((data, ctx) => {
+		if (
+			data.category === "store owner" ||
+			data.category === "restaurant owner"
+		) {
+			if (!data.businessName || data.businessName.trim() === "") {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message: "Business name is required",
+					path: ["businessName"],
+				});
 			}
-			if (data.category === "shoppers/drivers") {
-				return data.location !== undefined;
+			if (!data.businessAddress || data.businessAddress.trim() === "") {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message: "Business address is required",
+					path: ["businessAddress"],
+				});
 			}
-			return true; // no extra fields required for individual
-		},
-		{
-			message: "Please fill in all required fields for your category",
-			path: ["businessName"], // generic path for error display
+			if (!data.businessDescription) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message: "Business description is required",
+					path: ["businessDescription"],
+				});
+			}
 		}
-	);
+		if (data.category === "shoppers/drivers" && !data.location) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "Location is required",
+				path: ["location"],
+			});
+		}
+	});
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -219,17 +229,9 @@ export default function WaitlistForm() {
 					: {}),
 			};
 
-			const response = await fetch("/api/waitlist", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(payload),
-			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.error || "Failed to join waitlist");
+			const result = await joinWaitlist(payload);
+			if (!result.success) {
+				throw new Error(result.error || "Failed to join waitlist");
 			}
 
 			toast("You've been added to our waitlist. We'll be in touch soon!");
