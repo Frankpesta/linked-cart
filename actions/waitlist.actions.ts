@@ -3,6 +3,10 @@
 import { db } from "@/db/db";
 import { waitlist } from "@/db/schema";
 import { z } from "zod";
+import { Resend } from "resend";
+import { WaitlistConfirmationEmail } from "@/emails/WaitlistConfirmationEmail";
+
+const resend = new Resend(process.env.RESEND_API_KEY!);
 
 // Extended schema with conditional validation
 const waitlistSchema = z
@@ -105,6 +109,20 @@ export async function joinWaitlist(formData: FormData) {
 			location: location || null,
 		});
 
+		try {
+			await resend.emails.send({
+				from: "LinkedCart <onboarding@linkedcart.com>",
+				to: email,
+				subject: "Welcome to the Waitlist!",
+				react: await WaitlistConfirmationEmail({
+					name: name,
+				}),
+			});
+		} catch (emailError) {
+			console.error("Error sending welcome email:", emailError);
+			// Optionally, you can decide whether to throw here or just log and continue
+			throw new Error("Failed to send welcome email");
+		}
 		return {
 			success: true,
 		};
