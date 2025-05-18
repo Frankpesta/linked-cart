@@ -7,6 +7,7 @@ import {
 	Container,
 	Section,
 	Text,
+	Img,
 } from "@react-email/components";
 
 export function WaitlistConfirmationEmail({ name }: { name: string }) {
@@ -16,27 +17,37 @@ export function WaitlistConfirmationEmail({ name }: { name: string }) {
 			<Preview>You’re In! Welcome to the Future of Grocery Delivery 🛒</Preview>
 			<Body
 				style={{
-					background: "#f9fafb",
+					backgroundColor: "#f9fafb",
 					fontFamily: "Arial, sans-serif",
 					margin: 0,
 					padding: 0,
 				}}>
 				<Container
 					style={{
-						background: "#ffffff",
+						backgroundColor: "#ffffff",
 						padding: "32px",
 						borderRadius: "8px",
 						margin: "40px auto",
 						maxWidth: "600px",
 						boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
 					}}>
+					{/* Logo */}
+					<Section style={{ textAlign: "center", marginBottom: "24px" }}>
+						<Img
+							src="https://www.linkedcart.com/logo.svg"
+							alt="LinkedCart Logo"
+							width="120"
+							style={{ margin: "0 auto" }}
+						/>
+					</Section>
+
 					{/* Header */}
 					<Section style={{ marginBottom: "24px", textAlign: "center" }}>
 						<Text
 							style={{
 								fontSize: "22px",
 								fontWeight: "bold",
-								color: "#3b82f6",
+								color: "#257467",
 								marginBottom: "8px",
 							}}>
 							Thanks for Joining the LinkedCart Waitlist
@@ -54,6 +65,7 @@ export function WaitlistConfirmationEmail({ name }: { name: string }) {
 							}}>
 							Hi {name},
 						</Text>
+
 						<Text
 							style={{
 								fontSize: "16px",
@@ -61,11 +73,12 @@ export function WaitlistConfirmationEmail({ name }: { name: string }) {
 								lineHeight: "26px",
 								marginBottom: "16px",
 							}}>
-							We’re thrilled to welcome you to the LinkedCart community - a
+							We’re thrilled to welcome you to the LinkedCart community — a
 							smarter, faster, and more local way to get groceries delivered.
 							You’ve just taken the first step toward experiencing grocery
 							delivery reimagined.
 						</Text>
+
 						<Text
 							style={{
 								fontSize: "16px",
@@ -76,7 +89,7 @@ export function WaitlistConfirmationEmail({ name }: { name: string }) {
 							At LinkedCart, we believe that convenience, affordability, and
 							dignity should define every household’s food journey. That’s why
 							we’re building a powerful platform that connects you to multiple
-							local vendors in a single order - delivered with care by trusted
+							local vendors in a single order — delivered with care by trusted
 							community agents.
 						</Text>
 
@@ -89,9 +102,10 @@ export function WaitlistConfirmationEmail({ name }: { name: string }) {
 							}}>
 							As part of our early access list, you’ll be the first to:
 						</Text>
+
 						<ul
 							style={{
-								color: "#10b981",
+								color: "#257467",
 								fontSize: "16px",
 								margin: "0 0 16px 20px",
 								padding: 0,
@@ -110,7 +124,7 @@ export function WaitlistConfirmationEmail({ name }: { name: string }) {
 								lineHeight: "26px",
 								marginBottom: "16px",
 							}}>
-							Stay tuned - we’ll be in touch soon with updates on your launch
+							Stay tuned — we’ll be in touch soon with updates on your launch
 							city, app previews, and how to refer your friends to move up the
 							waitlist.
 						</Text>
@@ -125,7 +139,7 @@ export function WaitlistConfirmationEmail({ name }: { name: string }) {
 							In the meantime, follow us on{" "}
 							<a
 								href="https://www.linkedin.com/company/linkedcart/"
-								style={{ color: "#3b82f6", textDecoration: "underline" }}
+								style={{ color: "#257467", textDecoration: "underline" }}
 								target="_blank"
 								rel="noopener noreferrer">
 								LinkedIn
@@ -133,7 +147,7 @@ export function WaitlistConfirmationEmail({ name }: { name: string }) {
 							,{" "}
 							<a
 								href="https://www.instagram.com/linkedcartapp?igsh=MXVrM2dtZ3RtaHBrcg%3D%3D&utm_source=qr"
-								style={{ color: "#3b82f6", textDecoration: "underline" }}
+								style={{ color: "#257467", textDecoration: "underline" }}
 								target="_blank"
 								rel="noopener noreferrer">
 								Instagram
@@ -141,7 +155,7 @@ export function WaitlistConfirmationEmail({ name }: { name: string }) {
 							,{" "}
 							<a
 								href="https://x.com/linkedcartapp?s=21&t=SYrog4wVA60S1Y5_epinEg"
-								style={{ color: "#3b82f6", textDecoration: "underline" }}
+								style={{ color: "#257467", textDecoration: "underline" }}
 								target="_blank"
 								rel="noopener noreferrer">
 								Twitter
@@ -162,12 +176,13 @@ export function WaitlistConfirmationEmail({ name }: { name: string }) {
 						<Text
 							style={{
 								fontSize: "16px",
-								color: "#3b82f6",
+								color: "#257467",
 								fontWeight: "bold",
 								marginBottom: "4px",
 							}}>
-							- Team LinkedCart
+							– Team LinkedCart
 						</Text>
+
 						<Text
 							style={{
 								fontSize: "14px",
