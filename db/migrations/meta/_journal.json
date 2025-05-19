@@ -15,6 +15,13 @@
       "when": 1747489636264,
       "tag": "0001_rich_moira_mactaggert",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1747685688166,
+      "tag": "0002_complex_blindfold",
+      "breakpoints": true
     }
   ]
 }
