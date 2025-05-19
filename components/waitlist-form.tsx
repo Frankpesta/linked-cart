@@ -30,7 +30,7 @@ import { joinWaitlist } from "@/actions/waitlist.actions";
 // Type for city options
 type CityOption = { value: string; label: string };
 
-// Extended schema to include conditional fields
+// Extended schema to include country and city fields
 const formSchema = z
 	.object({
 		name: z.string().min(2, "Name must be at least 2 characters"),
@@ -48,7 +48,8 @@ const formSchema = z
 		businessDescription: z
 			.enum(["African", "Chinese", "Indian", "Mexican", "Caribbean", "Others"])
 			.optional(),
-		location: z
+		country: z.enum(["US", "Canada"]).optional(),
+		city: z
 			.object({
 				value: z.string(),
 				label: z.string(),
@@ -82,12 +83,21 @@ const formSchema = z
 				});
 			}
 		}
-		if (data.category === "shoppers/drivers" && !data.location) {
-			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
-				message: "Location is required",
-				path: ["location"],
-			});
+		if (data.category === "shoppers/drivers") {
+			if (!data.country) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message: "Country is required",
+					path: ["country"],
+				});
+			}
+			if (!data.city) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message: "City is required",
+					path: ["city"],
+				});
+			}
 		}
 	});
 
@@ -166,6 +176,7 @@ const customSelectStyles = {
 
 export default function WaitlistForm() {
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [filteredCities, setFilteredCities] = useState<CityOption[]>([]);
 
 	const form = useForm<FormValues>({
 		resolver: zodResolver(formSchema),
@@ -178,20 +189,48 @@ export default function WaitlistForm() {
 			businessAddress: "",
 			postalCode: "",
 			businessDescription: undefined,
-			location: undefined,
+			country: undefined,
+			city: undefined,
 		},
 	});
 
-	// Watch category to conditionally render fields
+	// Watch category and country to conditionally render fields and filter cities
 	const category = form.watch("category");
+	const country = form.watch("country");
 
+	// Update city options based on country selection
+	useEffect(() => {
+		if (country) {
+			const filtered = cityOptions.filter((city) =>
+				country === "US"
+					? city.label.endsWith("USA")
+					: city.label.endsWith("Canada")
+			);
+			setFilteredCities(filtered);
+			// Reset city if it doesn't match the selected country
+			const currentCity = form.getValues("city");
+			if (
+				currentCity &&
+				((country === "US" && !currentCity.label.endsWith("USA")) ||
+					(country === "Canada" && !currentCity.label.endsWith("Canada")))
+			) {
+				form.setValue("city", undefined);
+			}
+		} else {
+			setFilteredCities([]);
+			form.setValue("city", undefined);
+		}
+	}, [country, form]);
+
+	// Reset fields based on category change
 	useEffect(() => {
 		if (category === "individual") {
 			form.setValue("businessName", "");
 			form.setValue("businessAddress", "");
 			form.setValue("postalCode", "");
 			form.setValue("businessDescription", undefined);
-			form.setValue("location", undefined);
+			form.setValue("country", undefined);
+			form.setValue("city", undefined);
 		}
 		if (category === "shoppers/drivers") {
 			form.setValue("businessName", "");
@@ -200,9 +239,10 @@ export default function WaitlistForm() {
 			form.setValue("businessDescription", undefined);
 		}
 		if (category === "store owner" || category === "restaurant owner") {
-			form.setValue("location", undefined);
+			form.setValue("country", undefined);
+			form.setValue("city", undefined);
 		}
-	}, [category]);
+	}, [category, form]);
 
 	async function onSubmit(values: FormValues) {
 		setIsSubmitting(true);
@@ -224,7 +264,8 @@ export default function WaitlistForm() {
 					: {}),
 				...(values.category === "shoppers/drivers"
 					? {
-							location: values.location?.label,
+							country: values.country,
+							city: values.city?.label,
 						}
 					: {}),
 			};
@@ -235,7 +276,6 @@ export default function WaitlistForm() {
 			}
 
 			toast("You've been added to our waitlist. We'll be in touch soon!");
-
 			form.reset();
 		} catch (error) {
 			console.error("Error:", error);
@@ -395,28 +435,55 @@ export default function WaitlistForm() {
 					</>
 				)}
 
-				{/* Conditional field for Shoppers/Drivers */}
+				{/* Conditional fields for Shoppers/Drivers */}
 				{category === "shoppers/drivers" && (
-					<FormField
-						control={form.control}
-						name="location"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Location (City in US or Canada)</FormLabel>
-								<FormControl>
-									<ReactSelect
-										options={cityOptions}
-										value={field.value || null}
-										onChange={(val: CityOption | null) => field.onChange(val)}
-										placeholder="Select your city"
-										isClearable
-										styles={customSelectStyles} // Add this line
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
+					<>
+						{/* Country */}
+						<FormField
+							control={form.control}
+							name="country"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Country</FormLabel>
+									<Select onValueChange={field.onChange} value={field.value}>
+										<FormControl>
+											<SelectTrigger>
+												<SelectValue placeholder="Select a country" />
+											</SelectTrigger>
+										</FormControl>
+										<SelectContent>
+											<SelectItem value="US">United States</SelectItem>
+											<SelectItem value="Canada">Canada</SelectItem>
+										</SelectContent>
+									</Select>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						{/* City */}
+						<FormField
+							control={form.control}
+							name="city"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>City</FormLabel>
+									<FormControl>
+										<ReactSelect
+											options={filteredCities}
+											value={field.value || null}
+											onChange={(val: CityOption | null) => field.onChange(val)}
+											placeholder="Select your city"
+											isClearable
+											isDisabled={!country} // Disable if no country is selected
+											styles={customSelectStyles}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+					</>
 				)}
 
 				<Button

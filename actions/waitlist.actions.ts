@@ -8,7 +8,6 @@ import { WaitlistConfirmationEmail } from "@/emails/WaitlistConfirmationEmail";
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
-// Schema remains unchanged
 const waitlistSchema = z
 	.object({
 		name: z.string().min(2, "Name must be at least 2 characters"),
@@ -26,7 +25,8 @@ const waitlistSchema = z
 		businessDescription: z
 			.enum(["African", "Chinese", "Indian", "Mexican", "Caribbean", "Others"])
 			.optional(),
-		location: z.string().optional(),
+		country: z.enum(["US", "Canada"]).optional(),
+		city: z.string().optional(),
 	})
 	.refine(
 		(data) => {
@@ -39,17 +39,16 @@ const waitlistSchema = z
 				);
 			}
 			if (data.category === "shoppers/drivers") {
-				return !!data.location;
+				return !!data.country && !!data.city;
 			}
 			return true;
 		},
 		{
 			message: "Please fill in all required fields for your category",
-			path: ["businessName"],
+			path: ["city"], // Point to city for shoppers/drivers errors
 		}
 	);
 
-// Accepts structured data directly from frontend
 export async function joinWaitlist(data: z.infer<typeof waitlistSchema>) {
 	try {
 		// Validate data
@@ -72,7 +71,8 @@ export async function joinWaitlist(data: z.infer<typeof waitlistSchema>) {
 			businessAddress,
 			postalCode,
 			businessDescription,
-			location,
+			country,
+			city,
 		} = validated.data;
 
 		// Insert into DB
@@ -85,7 +85,8 @@ export async function joinWaitlist(data: z.infer<typeof waitlistSchema>) {
 			businessAddress: businessAddress || null,
 			postalCode: postalCode || null,
 			businessDescription: businessDescription || null,
-			location: location || null,
+			country: country || null,
+			city: city || null,
 		});
 
 		// Send confirmation email
